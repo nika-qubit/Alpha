@@ -1,0 +1,188 @@
+#! /bin/bash
+
+#help
+help='
+This utility is for workspace git repository status check, branch/issue/feature status check and multiple repo checkout action.
+
+Options:
+optional	-i<part of branch name/issue id/feature id>	to check for specified branch existence among repos in current workspace
+optional	-o<part of branch name/issue id/feature id>	to checkout specified branches in all clean repos with the given branch name in current workspace
+optional	-r to check the remote named [origin] to see if out of sync
+'
+
+#options flag
+issue_branch_check_enabled=false
+checkout_branch_enabled=false
+check_origin_enabled=false
+
+#handle option and their values
+while getopts 'i:o:r' arg
+do
+	case ${arg} in
+	i) issue_id=${OPTARG}
+	   issue_branch_check_enabled=true
+	   ;;
+	o) checkout_branch=${OPTARG}
+	   checkout_branch_enabled=true
+	   ;;
+	r) check_origin_enabled=true
+	   ;;	
+	*) echo "Unsupported option "${arg}
+		echo "${help}"
+		exit 1
+	esac
+done
+echo "Checking start!"
+
+#common checking variables
+repoCount=0
+cleanCount=0
+uncleanCount=0
+nonGitRepoCount=0
+changedRepoNames=''
+nonGitRepoNames=''
+
+# issue branch checking variables
+issueBranchCount=0
+issueBranchRepoNames=''
+
+# branch checkout variables
+checkoutBranchCount=0
+checkedoutBranchCount=0
+uncleanCheckoutBranchCount=0
+checkedoutBranchRepoNames=''
+uncleanCheckoutBranchRepoNames=''
+
+# remote checking variables
+outSyncCount=0
+outSyncRepoNames=''
+
+# for each repo do the workflows
+for repo_dir in `find . -maxdepth 1 -type d -not -path '*/\.*' -not -path '.'`; do
+	repo_name=${repo_dir#*./}
+	echo "========================================================================"
+	echo "Repo: " $repo_name
+	echo "========================================================================"
+	cd $repo_dir
+	#workflows
+		#local variables
+		in_loop_clean_flag=false
+
+	#common checking workflow
+		repoCount=$((repoCount+1))
+		git status
+		if [ $? -ne 0 ]; then	#not a git repo
+			nonGitRepoCount=$((nonGitRepoCount+1))
+			nonGitRepoNames="${nonGitRepoNames}""* ${repo_name}"$'\n'
+			cd .. #back to parent dir, also clear $?
+			continue
+		fi
+
+		#this is a git repo
+		git_status=$(git status)
+		if [[ $git_status == *"clean"* ]]; then
+			cleanCount=$((cleanCount+1))
+			in_loop_clean_flag=true	#this git repo is clean	
+		else
+			uncleanCount=$((uncleanCount+1))
+			changedRepoNames="${changedRepoNames}""* ${repo_name}"$'\n'
+		fi
+
+	#issue checking workflow
+		if [ $issue_branch_check_enabled == true ]; then
+			if [[ $git_status == *"On branch "*$issue_id* ]]; then
+				issueBranchCount=$((issueBranchCount+1))
+				issueBranchRepoNames="${issueBranchRepoNames}""* ${repo_name}"$'\n'
+			else
+				git_branch_check=$(git branch | grep $issue_id)
+				if [ "$git_branch_check" != "" ]; then
+					issueBranchCount=$((issueBranchCount+1))
+					issueBranchRepoNames="${issueBranchRepoNames}""* ${repo_name}"$'\n'
+				fi
+			fi
+		fi
+
+	#workspace repos branches checkout workflow
+		if [ $checkout_branch_enabled == true ]; then
+			git_branch_check=$(git branch | grep $checkout_branch)
+			if [ "$git_branch_check" != "" ]; then	#this repo contains the checkout_branch
+				checkoutBranchCount=$((checkoutBranchCount+1))
+				if [ $in_loop_clean_flag == true ]; then
+					valid_checkout_branch_name=${git_branch_check##\*}
+					git checkout $valid_checkout_branch_name
+					checkedoutBranchRepoNames="${checkedoutBranchRepoNames}""* ${repo_name}"$'\n'
+					checkedoutBranchCount=$((checkedoutBranchCount+1))
+				else
+					uncleanCheckoutBranchRepoNames="${uncleanCheckoutBranchRepoNames}""* ${repo_name}"$'\n'
+					uncleanCheckoutBranchCount=$((uncleanCheckoutBranchCount+1))
+				fi
+			fi
+		fi
+
+	#git repos remote origin sync check workflow
+		if [ $check_origin_enabled == true ]; then
+			remote_origin_check=$(git remote show origin | grep "up to date")
+			if [ "$remote_origin_check" != "" ]; then #this repo has remote called origin and up to date
+				echo "[Sync] ${repo_name} is up to date with remote origin:"$'\n'
+				git remote -v
+			else
+				git remote show origin #output the error info
+				outSyncCount=$((outSyncCount+1))
+				outSyncRepoNames="${outSyncRepoNames}""* ${repo_name}"$'\n'
+			fi
+		fi
+
+	cd ..
+	echo "========================================================================"
+done;
+
+#reporting
+
+#common checking report
+echo "Repos #: " $repoCount ", clean git repos #: " $cleanCount ", unclean git repos #: " $uncleanCount ", non-git repos #: " $nonGitRepoCount$'\n'
+if [ "$changedRepoNames" != "" ]; then
+	echo "Repos with unstaged/uncommited changes:"
+	echo "${changedRepoNames}"
+fi
+if [ "$nonGitRepoNames" != "" ]; then
+	echo "Non-git repos:"
+	echo "${nonGitRepoNames}"
+fi
+
+#issue checking report
+if [ $issue_branch_check_enabled == true ]; then 
+	echo "Issue check result:"
+	echo "Involved repo #: " $issueBranchCount
+	echo "Involved repo names: "
+	echo "${issueBranchRepoNames}"
+fi
+
+#checkout branch report
+if [ $checkout_branch_enabled == true ]; then
+	echo "Workspace scope branch checkout result:"
+	if [ $checkoutBranchCount -eq 0 ]; then
+		echo "No repo has the given branch. Nothing is checked out."
+	else
+		echo "Involved repo #: " $checkoutBranchCount
+		if [ $checkedoutBranchCount -eq 0 ]; then
+			echo "No repo has been checked out."
+		else
+			echo "Branch checked out repo #: " $checkedoutBranchCount
+			echo "The repos are: "
+			echo "${checkedoutBranchRepoNames}"
+		fi
+		if [ $uncleanCheckoutBranchCount -ne 0 ]; then
+			echo "Some repo is not in clean status. Their branches weren't checked out."
+			echo "Unclean involved repo #: " $uncleanCheckoutBranchCount
+			echo "The repos are: "
+			echo "${uncleanCheckoutBranchRepoNames}"
+		fi
+	fi
+fi
+
+#origin check report
+if [ $check_origin_enabled == true ]; then
+	echo "Repos remote origin check result:"
+	echo "Repos out of sync to remote origin #: "$outSyncCount
+	echo "${outSyncRepoNames}"
+fi
