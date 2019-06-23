@@ -36,6 +36,9 @@ nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 
+" normal mode: save
+nnoremap <leader>s :w<CR>  
+
 " Enable folding
 set foldmethod=indent
 set foldlevel=99
