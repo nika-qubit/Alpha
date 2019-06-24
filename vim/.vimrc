@@ -39,6 +39,9 @@ nnoremap <C-H> <C-W><C-H>
 " normal mode: save
 nnoremap <leader>s :w<CR>  
 
+" F6 toggles NERDTree
+nmap <F6> :NERDTreeToggle<CR>
+
 " Enable folding
 set foldmethod=indent
 set foldlevel=99
@@ -56,7 +59,7 @@ let python_highlight_all=1
 syntax on
 
 "python with virtualenv support
-python3 << EOF
+py << EOF
 import os
 import sys
 if 'VIRTUAL_ENV' in os.environ:
