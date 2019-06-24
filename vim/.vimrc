@@ -1,5 +1,7 @@
 set encoding=utf-8
 set clipboard=unnamed
+set tabstop=2
+set shiftwidth=2
 
 set nocompatible              " required
 filetype off                  " required
@@ -77,7 +79,7 @@ au BufNewFile,BufRead *.py
     \ set autoindent |
     \ set fileformat=unix
 
-au BufNewFile,BufRead *.js, *.html, *.css
+au BufNewFile,BufRead *.js, *.html, *.css, *.proto 
     \ set tabstop=2 |
     \ set softtabstop=2 |
     \ set shiftwidth=2
