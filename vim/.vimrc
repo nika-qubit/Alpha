@@ -1,5 +1,5 @@
 set encoding=utf-8
-set clipboard=unnamed
+set clipboard=unnamedplus
 set tabstop=2
 set shiftwidth=2
 
@@ -43,6 +43,11 @@ nnoremap <leader>s :w<CR>
 
 " F6 toggles NERDTree
 nmap <F6> :NERDTreeToggle<CR>
+
+" YCM
+nnoremap <leader>gf	:YcmCompleter GoToDefinition<CR>
+nnoremap <leader>gl	:YcmCompleter GoToDeclaration<CR>
+nnoremap <leader>gg	:YcmCompleter GoToDefinitionElseDeclaration<CR>
 
 " Enable folding
 set foldmethod=indent
