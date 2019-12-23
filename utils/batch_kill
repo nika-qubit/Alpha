@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Imports
+source common
+
+# Help
+help='
+Batch kill utility to kill all processes with name mathing the given pattern.
+
+Options:
+required      -p<process name substring>      the naming pattern processes to be killed matching to
+'
+
+# Options
+process_name_pattern=
+
+# Handling options
+while getopts ':p:h' arg
+do
+  case ${arg} in
+    p) process_name_pattern=${OPTARG}
+       ;;
+    h) blue "${help}"
+       exit 0
+       ;;
+    *) red "Illegal option ${OPTARG}"
+       blue "${help}"
+       exit 1
+  esac
+done
+
+# Batch Kill
+
+## Check option value
+if [[ "$process_name_pattern" == "" ]]; then
+  red "Please specify an non-empty process name pattern with option -p."
+  blue "${help}"
+  exit 2
+fi
+
+## Display processes to be killed
+process_to_kill_info=$(ps -ef | grep "$process_name_pattern" | grep -v "grep\|batch_kill")
+if [[ "$process_to_kill_info" == "" ]]; then
+  green "No process matching the given name pattern."
+  exit 0
+fi
+green "The processes to be killed are (note: some of them might have terminated at this moment): "
+echo "$process_to_kill_info"
+
+## Confirmation
+green "Are you sure you want to kill all the above processes (y/n)?"
+read confirmation
+if [[ "$confirmation" != "y" ]]; then
+  green "Didn't kill any of the processes."
+  exit 0
+fi
+
+## Execution of batch kill
+green "Start killing..."
+for process_id in `ps -ef | grep "$process_name_pattern" | grep -v "grep\|batch_kill" | awk '{ print $2 }'`; do
+  blue "Killing $process_id"
+  kill -9 "$process_id"
+done
+green "Batch kill finished."
+exit 0
+

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# This is common script used among all bash-util scripts.
+# Run this as source before each of your scripts to use this as dependency.
+
+# Common methods
+## Colorize terminal
+green() { echo "$(tput setaf 2)$*$(tput sgr0)"; }
+red() { echo "$(tput setaf 1)$*$(tput sgr0)"; }
+blue() { echo "$(tput setaf 4)$*$(tput sgr0)"; }
+
