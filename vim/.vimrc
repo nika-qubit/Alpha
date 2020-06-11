@@ -1,3 +1,6 @@
+" Allows find command to search recursively in sub dirs.
+set path+=**
+
 set encoding=utf-8
 set clipboard=unnamedplus
 set tabstop=2
