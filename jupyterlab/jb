@@ -12,6 +12,6 @@ jlpm build
 jupyter lab build
 
 if [[ $1 == 'run' ]];then
-  jupyter lab
+  jupyter lab --NotebookApp.iopub_data_rate_limit=10000000
 fi
 
