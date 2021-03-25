@@ -44,7 +44,7 @@ nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 
 " normal mode: save
-nnoremap <leader>s :w<CR>  
+nnoremap <leader>s :w<CR>
 
 " F6 toggles NERDTree
 nmap <F6> :NERDTreeToggle<CR>
@@ -64,6 +64,8 @@ nnoremap <space> za
 " Enable show docstring for folded code
 let g:SimpylFold_docstring_preview=1
 
+let g:NERDTreeWinPos="right"
+
 let g:ycm_autoclose_preview_window_after_completion=1
 map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
@@ -79,10 +81,11 @@ au BufNewFile,BufRead *.py
     \ set autoindent |
     \ set fileformat=unix
 
-au BufNewFile,BufRead *.js, *.html, *.css, *.proto 
+au BufNewFile,BufRead *.js,*.html,*.css,*.proto
     \ set tabstop=2 |
     \ set softtabstop=2 |
-    \ set shiftwidth=2
+    \ set shiftwidth=2 |
+    \ set expandtab
 
 :highlight BadWhitespace ctermfg=16 ctermbg=253 guifg=#000000 guibg=#F8F8F0
 au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
