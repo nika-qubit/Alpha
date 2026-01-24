@@ -22,6 +22,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${IMMICH_CACHE_LOCATION}:/cache
       - ${IMMICH_CONFIG_LOCATION}:/config
+      - ${EXTERNAL_LOCATION}:/ext-archive
     env_file:
       - .env
     ports:
@@ -40,7 +41,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 900M
+          memory: 700M
 
   redis:
     container_name: immich_redis
@@ -67,7 +68,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 712M
 
 volumes:
   model-cache:
