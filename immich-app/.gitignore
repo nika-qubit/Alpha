@@ -1,0 +1,11 @@
+# Local credentials and host-specific settings
+.env
+.env.*
+!.env.example
+
+# Runtime data and database backups must never be committed
+*.sql
+*.sql.gz
+*.dump
+postgres/
+cache/

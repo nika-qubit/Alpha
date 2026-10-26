@@ -1,13 +1,24 @@
 {
   "ffmpeg": {
     "crf": 23,
-    "threads": 0,
+    "threads": 2,
     "preset": "ultrafast",
     "targetVideoCodec": "h264",
-    "acceptedVideoCodecs": ["h264"],
+    "acceptedVideoCodecs": [
+      "h264"
+    ],
     "targetAudioCodec": "aac",
-    "acceptedAudioCodecs": ["aac", "mp3", "libopus", "pcm_s16le"],
-    "acceptedContainers": ["mov", "ogg", "webm"],
+    "acceptedAudioCodecs": [
+      "aac",
+      "mp3",
+      "opus",
+      "pcm_s16le"
+    ],
+    "acceptedContainers": [
+      "mov",
+      "ogg",
+      "webm"
+    ],
     "targetResolution": "720",
     "maxBitrate": "0",
     "bframes": -1,
@@ -31,13 +42,13 @@
   },
   "job": {
     "backgroundTask": {
-      "concurrency": 1
+      "concurrency": 3
     },
     "smartSearch": {
       "concurrency": 1
     },
     "metadataExtraction": {
-      "concurrency": 1
+      "concurrency": 4
     },
     "faceDetection": {
       "concurrency": 1
@@ -46,22 +57,22 @@
       "concurrency": 1
     },
     "sidecar": {
-      "concurrency": 1
+      "concurrency": 2
     },
     "library": {
-      "concurrency": 1
+      "concurrency": 2
     },
     "migration": {
       "concurrency": 1
     },
     "thumbnailGeneration": {
-      "concurrency": 1
+      "concurrency": 3
     },
     "videoConversion": {
       "concurrency": 1
     },
     "notifications": {
-      "concurrency": 1
+      "concurrency": 2
     }
   },
   "logging": {
@@ -69,8 +80,10 @@
     "level": "log"
   },
   "machineLearning": {
-    "enabled": false,
-    "urls": ["http://immich-machine-learning:3003"],
+    "enabled": true,
+    "urls": [
+      "http://immich-machine-learning:3003"
+    ],
     "clip": {
       "enabled": true,
       "modelName": "ViT-B-32__openai"
@@ -144,7 +157,7 @@
   },
   "trash": {
     "enabled": true,
-    "days": 30
+    "days": 365
   },
   "theme": {
     "customCss": ""
