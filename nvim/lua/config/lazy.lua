@@ -1,3 +1,7 @@
+-- Ensure git clones inside lazy.nvim always use standard "files" ref storage
+-- (lazy.nvim parses .git/HEAD directly and fails on corporate git's default reftable format).
+vim.env.GIT_DEFAULT_REF_FORMAT = "files"
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
@@ -20,10 +24,15 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
+-- Fall back to LazyVim v14.x on hosts where Neovim is older than 0.11.2 (e.g. Debian/Pi)
+local lazyvim_spec = vim.fn.has("nvim-0.11.2") == 1
+		and { "LazyVim/LazyVim", import = "lazyvim.plugins" }
+	or { "LazyVim/LazyVim", version = "^14.14.0", import = "lazyvim.plugins" }
+
 require("lazy").setup({
 	spec = {
 		-- add LazyVim and import its plugins
-		{ "LazyVim/LazyVim", import = "lazyvim.plugins" },
+		lazyvim_spec,
 		-- import/override with your plugins
 		{ import = "plugins" },
 	},
