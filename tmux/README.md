@@ -11,13 +11,13 @@ This folder contains a reusable setup for tmux session persistence (save/restore
 
 - `tmux-resurrect` for manual save/restore
 - `tmux-continuum` for periodic autosave and automatic restore
-- Save directory: `/Users/ningk/workspace/tmux-resurrect-data`
-- Plugin directory: `/Users/ningk/workspace/tmux-plugins`
+- Save directory: `~/.tmux/resurrect`
+- Plugin directory: `~/.tmux/plugins`
 
 ## Quick Start
 
 ```bash
-bash /Users/ningk/workspace/Alpha/tmux/setup_tmux_persistence.sh
+bash ~/workspace/Alpha/tmux/setup_tmux_persistence.sh
 ```
 
 ## Optional Overrides
@@ -25,11 +25,11 @@ bash /Users/ningk/workspace/Alpha/tmux/setup_tmux_persistence.sh
 You can override default paths using environment variables:
 
 ```bash
-WORKSPACE_DIR=/Users/ningk/workspace \
-PLUGINS_DIR=/Users/ningk/workspace/tmux-plugins \
-RESURRECT_DIR=/Users/ningk/workspace/tmux-resurrect-data \
-TARGET_TMUX_CONF=/Users/ningk/.tmux.conf \
-bash /Users/ningk/workspace/Alpha/tmux/setup_tmux_persistence.sh
+TMUX_HOME="$HOME/.tmux" \
+PLUGINS_DIR="$HOME/.tmux/plugins" \
+RESURRECT_DIR="$HOME/.tmux/resurrect" \
+TARGET_TMUX_CONF="$HOME/.tmux.conf" \
+bash ~/workspace/Alpha/tmux/setup_tmux_persistence.sh
 ```
 
 ## Apply / Verify
@@ -57,7 +57,7 @@ tmux source-file ~/.tmux.conf
 ## Verify Saved Snapshot
 
 ```bash
-ls -lah /Users/ningk/workspace/tmux-resurrect-data
+ls -lah ~/.tmux/resurrect
 ```
 
 Expected artifacts include:

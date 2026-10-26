@@ -4,9 +4,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Override via env if needed
-WORKSPACE_DIR="${WORKSPACE_DIR:-/Users/ningk/workspace}"
-PLUGINS_DIR="${PLUGINS_DIR:-$WORKSPACE_DIR/tmux-plugins}"
-RESURRECT_DIR="${RESURRECT_DIR:-$WORKSPACE_DIR/tmux-resurrect-data}"
+TMUX_HOME="${TMUX_HOME:-$HOME/.tmux}"
+PLUGINS_DIR="${PLUGINS_DIR:-$TMUX_HOME/plugins}"
+RESURRECT_DIR="${RESURRECT_DIR:-$TMUX_HOME/resurrect}"
 TARGET_TMUX_CONF="${TARGET_TMUX_CONF:-$HOME/.tmux.conf}"
 TEMPLATE_CONF="$SCRIPT_DIR/tmux.conf"
 
@@ -27,7 +27,6 @@ mkdir -p "$PLUGINS_DIR" "$RESURRECT_DIR"
 
 clone_or_update "https://github.com/tmux-plugins/tmux-resurrect" "$PLUGINS_DIR/tmux-resurrect"
 clone_or_update "https://github.com/tmux-plugins/tmux-continuum" "$PLUGINS_DIR/tmux-continuum"
-clone_or_update "https://github.com/tmux-plugins/tpm" "$PLUGINS_DIR/tpm"
 
 if [ ! -f "$TEMPLATE_CONF" ]; then
   echo "ERROR: template not found: $TEMPLATE_CONF" >&2
