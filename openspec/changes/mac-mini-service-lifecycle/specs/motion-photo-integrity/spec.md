@@ -42,3 +42,13 @@ Every production Immich release that changes media handling SHALL pass a bounded
 - **WHEN** any canary Motion Photo loses its relationship, becomes Offline despite present source files, or fails playback
 - **THEN** broader scans and batch recovery are blocked
 - **AND** the previous known-good application and recovery sources are retained pending investigation
+
+### Requirement: Verify upstream fixes against the reported failure mode
+
+The deployment SHALL NOT treat an upstream issue's closed state as proof that a specific Motion Photo data-integrity failure is fixed. Before a release is accepted as resolving a known failure, the release review SHALL identify merged code that addresses the same state transition and SHALL verify that the fix is present in the candidate release. A representative external-library canary SHALL still pass.
+
+#### Scenario: An upstream issue is closed as a duplicate
+
+- **WHEN** a tracked data-loss issue is closed without an explicitly linked fix for the same failure mode
+- **THEN** the issue remains an unresolved compatibility risk in the local release review
+- **AND** the release is not declared safe for broad recovery or library scans until a relevant merged change and successful canary are confirmed
