@@ -23,7 +23,7 @@
 
 ## 3. Implement update visibility and qualification
 
-- [ ] 3.1 Add a daily official Immich stable-release check that produces a version-and-digest review change.
+- [x] 3.1 Add a daily official Immich stable-release check that produces a draft pull request with the exact server and machine-learning image digests; it never deploys to production.
 - [ ] 3.2 Add compatibility and intermediate-upgrade checks from official release notes.
 - [ ] 3.3 Add ChatGPT Desktop version reporting using only official OpenAI release/update sources.
 - [ ] 3.4 Add CI validation for Compose configuration, OpenTofu formatting/validation/plan, secrets, and version pinning.

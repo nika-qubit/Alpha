@@ -12,3 +12,4 @@
 **/crash.*.log
 **/*.auto.tfvars
 **/terraform.tfvars
+**/__pycache__/
