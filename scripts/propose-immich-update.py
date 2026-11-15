@@ -86,7 +86,7 @@ def main() -> int:
     env_text = env_path.read_text(encoding="utf-8")
     compose_text = compose_path.read_text(encoding="utf-8")
 
-    current_match = re.search(r"(?m)^IMMICH_VERSION=(v\d+\.\d+\.\d+)\s*$", env_text)
+    current_match = re.search(r"(?m)^IMMICH_VERSION=(v\d+\.\d+\.\d+)[ \t]*$", env_text)
     if not current_match:
         raise RuntimeError("Could not read a pinned stable IMMICH_VERSION from .env.example")
     current = current_match.group(1)
@@ -136,7 +136,7 @@ def main() -> int:
             raise RuntimeError(f"Expected one pinned {image} image in Compose, found {count}")
 
     env_text, count = re.subn(
-        r"(?m)^IMMICH_VERSION=v\d+\.\d+\.\d+\s*$", f"IMMICH_VERSION={latest}", env_text
+        r"(?m)^IMMICH_VERSION=v\d+\.\d+\.\d+[ \t]*$", f"IMMICH_VERSION={latest}", env_text
     )
     if count != 1:
         raise RuntimeError("Expected exactly one IMMICH_VERSION in .env.example")
