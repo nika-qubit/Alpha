@@ -61,3 +61,19 @@ The deployment SHALL state which data each backup covers. A database dump SHALL 
 - **WHEN** a release can alter the database schema
 - **THEN** a current database backup is integrity-checked and restored in an isolated rehearsal before production deployment
 - **AND** routine restore drills are not required between risky changes unless the recovery design changes or a failure occurs
+
+### Requirement: Fail-closed storage loss response
+
+If a required media or backup volume is missing, has the wrong identity, or fails its sentinel check, startup SHALL refuse to invoke Compose. If a required volume becomes unavailable while Immich is running, the proposed runtime monitor SHALL stop the complete Immich Compose stack and alert. It SHALL restart the stack only after Docker readiness and all required volume identity and sentinel checks pass. This behavior SHALL pass an isolated test before production deployment.
+
+#### Scenario: Required volume is absent at startup
+
+- **WHEN** the safe-start check cannot verify a required volume
+- **THEN** Immich is not started and no fallback media or backup path is created
+- **AND** the failure is reported
+
+#### Scenario: Required volume disappears at runtime
+
+- **WHEN** the runtime monitor detects loss of a required volume
+- **THEN** it stops the Immich Compose stack and alerts
+- **AND** it does not restart Immich until Docker and all volume checks pass

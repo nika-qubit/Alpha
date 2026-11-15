@@ -1,0 +1,75 @@
+schema_version: 1
+
+# Public, machine-neutral policy. Actual volume UUIDs, home paths, credentials,
+# state, sentinels, and per-host observations belong outside Git.
+host:
+  architecture: apple-silicon
+  operating_system:
+    component: macOS
+    authority: Apple Software Update
+    update_policy: latest-compatible-security-updates
+    major_upgrade: reviewed-maintenance-change
+    unattended_major_upgrade: false
+  disk_encryption:
+    requirement: enabled
+    state_location: internal-filevault-protected-storage
+
+container_runtime:
+  component: Docker Desktop
+  authority: Docker official updater
+  channel: stable
+  bundled_components:
+    - Docker Engine
+    - Docker Compose
+  update_policy: check-daily-download-may-be-automatic-install-is-reviewed
+  support_policy: follow-current-official-macos-support-window
+
+infrastructure_as_code:
+  component: OpenTofu
+  authority: OpenTofu official release channel
+  provider_versions: exact-pins-in-lock-file
+  state_policy: local-filevault-protected-state-no-git-no-public-ci-artifacts
+  production_apply: reviewed-plan-required
+  secrets_in_state: forbidden
+
+immich:
+  release_authority: https://github.com/immich-app/immich/releases
+  release_check_interval: 24h
+  channel: stable
+  production_change: pull-request-with-exact-version-and-image-digests
+  production_apply: operator-reviewed-after-backup-and-health-gates
+  floating_latest_tag: forbidden
+  services:
+    server_and_machine_learning:
+      version_source: immich-stable-release
+      digest_required: true
+    postgresql:
+      version_source: immich-supported-postgresql-image
+      independent_upgrade: forbidden-without-immich-compatibility-review
+    valkey:
+      version_source: pinned-supported-image
+      digest_required: true
+  container_owner: Docker-Compose
+
+desktop_apps:
+  chatgpt:
+    component: ChatGPT Desktop
+    authority: OpenAI official in-app update or download channel
+    version_check: report-installed-version-and-official-status-when-verifiable
+    third_party_package_source: forbidden
+    session_data_management: forbidden
+
+storage_and_recovery:
+  required_volumes:
+    identities_and_sentinels: local-private-configuration
+  missing_required_volume:
+    startup: fail-closed
+    runtime: stop-immich-stack-and-alert
+    fallback_path_creation: forbidden
+  database_backup:
+    destination: EnvoySSD
+    scope: database-only
+    integrity_check: required-after-each-backup
+  media_recovery:
+    independent_original_media_copy: required-before-claiming-disk-failure-protection
+    current_capacity_sufficiency: unresolved

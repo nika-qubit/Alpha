@@ -2,18 +2,19 @@
 
 ## 1. Resolve policy decisions
 
-- [ ] 1.1 Set the Immich release lag target and decide whether qualified patch releases may deploy automatically.
+- [x] 1.1 Set the Immich release check target: check daily and raise a review change within 24 hours; every production update remains operator-reviewed.
 - [ ] 1.2 Choose the independent media-backup target, retention, recovery point objective, and recovery time objective.
-- [ ] 1.3 Confirm expected reboot recovery behavior, macOS login requirements, and FileVault constraints.
-- [ ] 1.4 Confirm ChatGPT Desktop's target Mac, official update behavior, and desired notification path.
-- [ ] 1.5 Choose OpenTofu state storage, encryption, locking, and recovery procedure.
-- [ ] 1.6 Decide the runtime action when either external volume disconnects while Immich is running.
-- [ ] 1.7 Define warning and upgrade deadlines for supported macOS, Docker Desktop, Engine/Compose, OpenTofu, and provider versions.
-- [ ] 1.8 Decide whether Docker Desktop may download updates automatically while installation waits for a maintenance window.
+- [x] 1.3 Record current recovery constraints: FileVault is enabled and startup uses a logged-in user's LaunchAgent; verify cold-boot behavior before promising unattended recovery.
+- [x] 1.4 Keep ChatGPT Desktop on OpenAI's official app update path; report version status only when it can be verified from official information.
+- [x] 1.5 Keep local OpenTofu state on the internal FileVault-protected disk, excluded from Git and public CI artifacts; prove state recovery before production use.
+- [x] 1.6 Set the proposed runtime response to missing required storage: fail closed, stop the Immich Compose stack, and restart only after Docker and volume identity/sentinel checks pass. Prove this in isolation before production.
+- [x] 1.7 Track vendor support windows dynamically; do not hard-code a permanent macOS support count.
+- [x] 1.8 Allow Docker Desktop to download updates automatically, while installation remains a reviewed maintenance action.
 
 ## 2. Prove the deployment boundaries
 
-- [ ] 2.1 Inventory which host files and policies OpenTofu will own and which remain owned by Docker Compose.
+- [x] 2.1 Inventory which host files and policies OpenTofu will own and which remain owned by Docker Compose.
+- [ ] 2.1a Reconcile the live Compose and safe-start files with the public repository templates before importing or applying OpenTofu; keep machine-specific values out of Git.
 - [ ] 2.2 Evaluate candidate OpenTofu providers against macOS file, LaunchAgent, and state-recovery requirements in an isolated test environment.
 - [ ] 2.3 Confirm a resource has exactly one owner; reject a design that manages Compose containers through both Compose and OpenTofu.
 - [ ] 2.4 Confirm CI can validate a change without access to production credentials, state, media, or the Mac mini.

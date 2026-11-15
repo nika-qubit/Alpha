@@ -2,3 +2,13 @@
 **/lazyvim.json
 .DS_Store
 **/.DS_Store
+
+# OpenTofu local state, plans, and machine-specific input files
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/*.tfplan
+**/crash.log
+**/crash.*.log
+**/*.auto.tfvars
+**/terraform.tfvars

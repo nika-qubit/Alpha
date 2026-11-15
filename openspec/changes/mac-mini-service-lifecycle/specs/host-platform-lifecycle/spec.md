@@ -69,3 +69,19 @@ The deployment SHALL monitor official release and support information for the fu
 - **WHEN** Docker Desktop downloads an update in the background
 - **THEN** the deployment reports the installed version separately from the downloaded version
 - **AND** production recovery and service checks still run after the update is installed
+
+### Requirement: Operator-reviewed production updates
+
+Official stable releases SHALL be checked daily and a reviewable version change SHALL be prepared within 24 hours when a newer compatible release is available. Production updates for macOS, Docker Desktop, OpenTofu providers, or Immich SHALL require operator review and SHALL pass backup, compatibility, storage, and post-update verification gates.
+
+#### Scenario: A new stable release is found
+
+- **WHEN** an official stable release is newer than the installed version
+- **THEN** the system prepares a reviewable change with exact versions and image digests where applicable
+- **AND** it does not apply the change to production automatically
+
+#### Scenario: Docker Desktop downloads an update
+
+- **WHEN** Docker Desktop automatically downloads an update
+- **THEN** the downloaded and installed versions are reported separately
+- **AND** installation remains a reviewed maintenance action

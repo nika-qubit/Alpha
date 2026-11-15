@@ -43,16 +43,16 @@ Update in layers: (1) macOS through Apple's supported updater after checking Doc
 
 Docker documents a rolling support window for macOS and publishes per-release Desktop, Engine, and Compose changes. These are inputs to the compatibility matrix, not permanent hard-coded version assumptions. Apple OS updates use Apple's update path; Docker Desktop updates use Docker's official path; OpenTofu describes desired configuration and reviewable plans, not a replacement updater for either vendor application.
 
-## Update policy recommendation
+## Update policy
 
-Recommended starting policy: check for official releases daily and raise a review item within 24 hours. Permit routine production updates only after the backup, storage, migration, and health gates pass. A patch release with no schema change may be eligible for automatic rollout after an isolated canary proves the path; major releases, schema changes, required intermediate upgrades, and any failed gate require explicit operator review. Do not report “current” when a gate blocks deployment.
+Check official stable releases daily and prepare a reviewable version-and-digest change within 24 hours. Production updates remain operator-reviewed; do not automatically apply even patch releases. A fresh verified database backup, storage checks, compatibility review, and post-update verification are required. Do not report “current” when a gate blocks deployment.
 
-The exact update service-level objective and whether qualified patch releases may apply without a person are Open Questions. The specification must be adjusted after the owner chooses these policies.
+macOS major upgrades, Docker Desktop installation, and Immich database migrations are separate maintenance changes. Docker Desktop may download updates automatically, but installation remains reviewed. Track the current official macOS support window dynamically rather than hard-coding a fixed number of supported releases.
 
 ## Storage and failure model
 
 - Startup checks verify mounted volume identity and sentinel content before Compose is invoked; Compose bind mounts disallow host path creation.
-- A runtime monitor checks required mounts. On storage loss, it must protect the library from fallback writes and alert. The implementation proof must determine whether it can safely stop only ingestion or must stop the server stack.
+- A runtime monitor checks required mounts. On storage loss, it stops the entire Immich Compose stack and alerts. It may restart the stack only after Docker is ready and both volume identity and sentinel checks pass again. The isolated proof must verify this fail-closed behavior before production deployment.
 - A network outage does not trigger container recreation or version changes. Local LAN service remains independent of external release checks where feasible.
 - Power recovery depends on Docker Desktop and the logged-in macOS user's LaunchAgent. Confirm whether FileVault or login requirements prevent unattended restart; do not enable automatic login as an implicit workaround.
 - Daily database dumps on EnvoySSD cover the database only. A separate independent copy of originals and sidecars is required before claiming recovery from ImmichMedia failure. The available EnvoySSD is much smaller than the active media library, so it cannot be assumed to hold a full media copy.
@@ -61,7 +61,7 @@ The exact update service-level objective and whether qualified patch releases ma
 
 - Keep the state file and saved plans out of Git and out of public CI artifacts.
 - Keep credentials outside OpenTofu inputs where possible; never put the live Immich `.env` into Terraform state.
-- Decide whether the single-operator state lives encrypted on the internal SSD with a protected copy on EnvoySSD, or in an encrypted remote backend with locking. Test recovery of state before adopting a backend.
+- Keep single-operator state on the internal FileVault-protected disk. Do not copy plaintext state to EnvoySSD or public CI artifacts. Test state recovery before production use; if state is lost, import existing managed files and inspect the plan before any apply.
 - Pin provider versions and commit the dependency lock file.
 - Require plan review before production changes. Do not use unattended `-auto-approve` for database, mount, or service restart changes.
 
@@ -97,11 +97,9 @@ References:
 
 ## Open Questions
 
-1. What update lag is acceptable for Immich stable patch releases, and may qualified patch releases deploy automatically after all gates pass? Recommendation: detect within 24 hours; allow patch deployment within 7 days only after a passing canary; require review for schema changes and major releases.
+1. Should a later policy allow qualified patch releases to deploy automatically? Current default is operator review for every production update.
 2. What independent media-backup target is available, and what recovery point and recovery time objectives should apply? The current 120 GB EnvoySSD cannot hold a second copy of the active media library.
-3. Is the Mac mini expected to recover without a person logging in after power loss? Confirm the FileVault and Docker Desktop login behavior before promising unattended recovery.
-4. Is ChatGPT Desktop installed on this Mac mini and expected to update automatically, or should this system only report its version and notify the operator to use OpenAI's updater?
-5. Which state backend and recovery copy are acceptable for a single-operator OpenTofu deployment?
-6. If ImmichMedia disconnects while the service is live, should the monitor stop the entire Immich stack or only block writes/ingestion? The implementation must prove there is no fallback write path before choosing.
-7. Which exact macOS, Docker Desktop, bundled Engine/Compose, OpenTofu, and provider support windows should trigger warning and upgrade deadlines? Recommendation: track the vendors' current support policy rather than pinning a fixed number of supported macOS releases in code.
-8. Should Docker Desktop be configured to download updates automatically while deferring installation to a reviewed maintenance window?
+3. The host currently uses FileVault and a user LaunchAgent. Confirm the recovery expectation after a cold reboot; do not enable automatic login as a workaround.
+4. ChatGPT Desktop has no documented supported OpenTofu/CLI updater in the reviewed official guidance. The design reports version/status only when verifiable and leaves updates to OpenAI's official app channel.
+5. Which independent state recovery copy is acceptable without placing plaintext state on EnvoySSD?
+6. Which exact warning deadlines should apply to vendor support windows? Track official policy dynamically; set operational deadlines after observing the chosen notification path.
