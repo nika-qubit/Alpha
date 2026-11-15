@@ -7,6 +7,7 @@ Immich now runs on the Mac mini, but its release checks, Docker deployment, exte
 ## What Changes
 
 - Define an OpenTofu-based, reviewable source of truth for Mac mini host configuration and service lifecycle policy.
+- Track compatibility and supported update paths across macOS, Docker Desktop, its bundled Docker Engine and Compose, OpenTofu/providers, and the Immich service images.
 - Specify how Immich stable releases are detected, pinned, qualified, deployed, and rolled back.
 - Specify safe behavior for power loss, network loss, missing or disconnected storage, and Docker Desktop startup delays.
 - Specify how ChatGPT Desktop stays on an official update channel and how stale or blocked updates are reported.
@@ -21,6 +22,7 @@ This change is a planning package only. It does not create OpenTofu resources, u
 - `immich-release-lifecycle`: Track and safely adopt official stable Immich releases.
 - `motion-photo-integrity`: Preserve Motion Photo relationships and verify playback through library scans and upgrades.
 - `mac-host-resilience`: Start and recover Immich safely across host, network, and storage failures.
+- `host-platform-lifecycle`: Track the complete host-to-container dependency chain and update it in compatible, reversible layers.
 - `desktop-app-updates`: Track ChatGPT Desktop through its official update channel and surface stale versions.
 
 ### Modified Capabilities

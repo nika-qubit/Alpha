@@ -8,6 +8,8 @@
 - [ ] 1.4 Confirm ChatGPT Desktop's target Mac, official update behavior, and desired notification path.
 - [ ] 1.5 Choose OpenTofu state storage, encryption, locking, and recovery procedure.
 - [ ] 1.6 Decide the runtime action when either external volume disconnects while Immich is running.
+- [ ] 1.7 Define warning and upgrade deadlines for supported macOS, Docker Desktop, Engine/Compose, OpenTofu, and provider versions.
+- [ ] 1.8 Decide whether Docker Desktop may download updates automatically while installation waits for a maintenance window.
 
 ## 2. Prove the deployment boundaries
 
@@ -15,6 +17,8 @@
 - [ ] 2.2 Evaluate candidate OpenTofu providers against macOS file, LaunchAgent, and state-recovery requirements in an isolated test environment.
 - [ ] 2.3 Confirm a resource has exactly one owner; reject a design that manages Compose containers through both Compose and OpenTofu.
 - [ ] 2.4 Confirm CI can validate a change without access to production credentials, state, media, or the Mac mini.
+- [ ] 2.5 Build the dependency and compatibility inventory for macOS, Docker Desktop, bundled Engine/Compose, OpenTofu/providers, and every Immich service image.
+- [ ] 2.6 Verify the planned layer order and recovery path for each host/runtime upgrade against current official vendor guidance.
 
 ## 3. Implement update visibility and qualification
 
@@ -29,6 +33,7 @@
 - [ ] 4.2 Verify cold boot, Docker-not-ready, missing-volume, wrong-volume, missing-sentinel, network-down, and runtime-disconnect scenarios without using production media for destructive tests.
 - [ ] 4.3 Verify missing disks never create fallback media or backup directories.
 - [ ] 4.4 Establish an independent original-media backup and verify representative restore before claiming protection from media-disk failure.
+- [ ] 4.5 Verify host updates layer by layer, including macOS login/FileVault behavior, Docker Desktop startup, APFS bind mounts, and the safe-start LaunchAgent.
 
 ## 5. Roll out safely
 

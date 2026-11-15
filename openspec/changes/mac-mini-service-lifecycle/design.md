@@ -9,6 +9,7 @@ Alpha is public. The change therefore contains only generic paths and policy. Li
 ## Goals
 
 - Make Immich release status and safe update readiness visible.
+- Track support and compatibility across the entire host-to-container dependency chain.
 - Preserve Motion Photo relationships and playback across scans and upgrades.
 - Recover safely after power loss and Docker Desktop delays.
 - Fail closed when the media or backup disk is missing, replaced, or disconnected.
@@ -31,6 +32,16 @@ Alpha is public. The change therefore contains only generic paths and policy. Li
 - **ChatGPT Desktop:** remains owned by OpenAI's supported app update channel. A local status check may report version drift, but it SHALL NOT install from a third-party package source or manipulate user session data.
 
 OpenTofu provisioners are not the default bridge for running `docker compose up`; the official OpenTofu documentation describes provisioners as a last resort. Prefer a clear, separately reviewable deployment command or a provider with lifecycle behavior that passes acceptance checks.
+
+## Dependency chain and update ownership
+
+The declared chain is: Mac mini hardware/Apple silicon → macOS and its login, FileVault, and APFS behavior → Docker Desktop → the Docker Engine and Compose versions shipped with that Desktop release → the Compose-managed Immich server and machine-learning images, PostgreSQL with its required extensions, and Valkey → mounted media, external-library, and backup volumes. The management chain also includes the OpenTofu CLI, its pinned providers, the OpenTofu state, and the CI runner that creates speculative plans.
+
+Maintain a version and compatibility matrix rather than setting every component to “latest.” Record the official source, installed and proposed versions, architecture support, compatibility notes, support window, and recovery path. Immich server/ML image digests and the PostgreSQL/Valkey versions remain explicit in the deployment. Docker Engine and Compose are recorded as the versions bundled with Docker Desktop; they are not independently replaced behind Desktop's back.
+
+Update in layers: (1) macOS through Apple's supported updater after checking Docker Desktop support; (2) Docker Desktop through Docker's official updater and record its bundled Engine/Compose versions; (3) OpenTofu CLI/providers through pinned, reviewed dependency changes; (4) Immich and its companion images through the qualified service-upgrade workflow. Do not combine a macOS major upgrade, Docker Desktop update, and Immich schema migration in one maintenance window. Re-run mount, sentinel, Docker readiness, bind-mount, Compose, container-health, and Motion Photo checks after each applicable layer before moving on.
+
+Docker documents a rolling support window for macOS and publishes per-release Desktop, Engine, and Compose changes. These are inputs to the compatibility matrix, not permanent hard-coded version assumptions. Apple OS updates use Apple's update path; Docker Desktop updates use Docker's official path; OpenTofu describes desired configuration and reviewable plans, not a replacement updater for either vendor application.
 
 ## Update policy recommendation
 
@@ -78,6 +89,11 @@ References:
 - [OpenTofu: Provisioners](https://opentofu.org/docs/language/resources/provisioners/syntax/)
 - [OpenTofu: Plan command](https://opentofu.org/docs/cli/commands/plan/)
 - [OpenSpec: spec-driven schema](https://github.com/Fission-AI/OpenSpec/blob/main/schemas/spec-driven/schema.yaml)
+- [Docker: Docker Desktop system requirements for Mac](https://docs.docker.com/desktop/setup/install/mac-install/)
+- [Docker: Docker Desktop release notes](https://docs.docker.com/desktop/release-notes/)
+- [Docker: Docker Desktop release FAQ](https://docs.docker.com/desktop/troubleshoot-and-support/faqs/releases/)
+- [Docker: Docker Compose release notes](https://docs.docker.com/compose/release-notes/)
+- [Apple: Update macOS on Mac](https://support.apple.com/en-mide/108382)
 
 ## Open Questions
 
@@ -87,3 +103,5 @@ References:
 4. Is ChatGPT Desktop installed on this Mac mini and expected to update automatically, or should this system only report its version and notify the operator to use OpenAI's updater?
 5. Which state backend and recovery copy are acceptable for a single-operator OpenTofu deployment?
 6. If ImmichMedia disconnects while the service is live, should the monitor stop the entire Immich stack or only block writes/ingestion? The implementation must prove there is no fallback write path before choosing.
+7. Which exact macOS, Docker Desktop, bundled Engine/Compose, OpenTofu, and provider support windows should trigger warning and upgrade deadlines? Recommendation: track the vendors' current support policy rather than pinning a fixed number of supported macOS releases in code.
+8. Should Docker Desktop be configured to download updates automatically while deferring installation to a reviewed maintenance window?
