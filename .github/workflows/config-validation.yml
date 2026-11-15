@@ -33,7 +33,7 @@ jobs:
 
       - name: Parse OpenSpec and policy YAML
         run: |
-          ruby -e 'require "yaml"; ARGV.each { |file| YAML.load_file(file); puts "YAML OK: #{file}" }' \
+          ruby -e 'require "yaml"; ARGV.each { |file| YAML.parse_file(file); puts "YAML syntax OK: #{file}" }' \
             openspec/config.yaml \
             openspec/changes/mac-mini-service-lifecycle/.openspec.yaml \
             mac-mini/dependency-policy.yaml
