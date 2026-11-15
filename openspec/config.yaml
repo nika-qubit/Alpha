@@ -1,0 +1,22 @@
+schema: spec-driven
+context: |
+  This repository is public and contains deployment guidance for a single-user Mac mini.
+  Never commit credentials, API keys, personal tokens, production .env files, OpenTofu
+  state files, saved plans, real disk UUIDs, or private network addresses.
+  Keep OpenTofu resource ownership explicit. Do not manage one resource from both
+  OpenTofu and Docker Compose. Treat service upgrades and storage recovery as data
+  operations with explicit preflight checks and a documented rollback path.
+rules:
+  proposal:
+    - State whether the proposal changes production or only documents a future plan.
+  specs:
+    - Use ADDED, MODIFIED, or REMOVED delta sections and Given/When/Then scenarios.
+    - Specify observable behavior, safe failure modes, and recovery expectations.
+    - Do not include actual credentials, disk identifiers, or private host details.
+  design:
+    - Keep vendor-owned updates on official vendor channels.
+    - Explain state protection, drift ownership, failure handling, and rollback.
+    - List unresolved policy choices as Open Questions; do not silently assume answers.
+  tasks:
+    - Do not start production implementation until Open Questions affecting behavior are resolved.
+    - Keep production changes, destructive cleanup, and database migrations behind explicit review.
