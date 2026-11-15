@@ -1,0 +1,47 @@
+name: Validate deployment templates
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/config-validation.yml"
+      - "immich-app/**"
+      - "mac-mini/**"
+      - "openspec/**"
+      - "scripts/**"
+  pull_request:
+    paths:
+      - ".github/workflows/config-validation.yml"
+      - "immich-app/**"
+      - "mac-mini/**"
+      - "openspec/**"
+      - "scripts/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Check public config for host identities and local state
+        run: python3 scripts/validate-public-config.py
+
+      - name: Parse OpenSpec and policy YAML
+        run: |
+          ruby -e 'require "yaml"; ARGV.each { |file| YAML.load_file(file); puts "YAML OK: #{file}" }' \
+            openspec/config.yaml \
+            openspec/changes/mac-mini-service-lifecycle/.openspec.yaml \
+            mac-mini/dependency-policy.yaml
+
+      - name: Validate Compose configuration without starting containers
+        working-directory: immich-app
+        run: |
+          cp .env.example .env
+          trap 'rm -f .env' EXIT
+          docker compose --env-file .env config --quiet
+
