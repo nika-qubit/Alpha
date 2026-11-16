@@ -22,6 +22,35 @@ permissions:
   contents: read
 
 jobs:
+  tofu:
+    runs-on: ubuntu-latest
+    env:
+      TF_IN_AUTOMATION: "true"
+    defaults:
+      run:
+        working-directory: mac-mini/iac
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up OpenTofu
+        uses: opentofu/setup-opentofu@a1320f892987e89d278cc92dc5adc984fb93aca4 # v2.0.2
+        with:
+          tofu_version: 1.13.9
+          tofu_wrapper: false
+
+      - name: Check formatting
+        run: tofu fmt -check -recursive
+
+      - name: Initialize providers without a backend
+        run: tofu init -backend=false -lockfile=readonly
+
+      - name: Validate configuration
+        run: tofu validate
+
+      - name: Plan with synthetic, non-production values
+        run: tofu plan -refresh=false -input=false -var-file=fixtures/ci.tfvars
+
   validate:
     runs-on: ubuntu-latest
     steps:
@@ -42,6 +71,15 @@ jobs:
         working-directory: immich-app
         run: |
           cp .env.example .env
-          trap 'rm -f .env' EXIT
-          docker compose --env-file .env config --quiet
+          cat > .immich-host.env <<EOF
+          IMMICH_VERSION=$(cat immich-version.txt)
+          UPLOAD_LOCATION=/Volumes/TEST_MEDIA/immich
+          EXTERNAL_LOCATION=/Volumes/TEST_MEDIA/archive
+          BACKUP_LOCATION=/Volumes/TEST_BACKUP/ImmichBackups
+          DB_DATA_LOCATION=/Users/immich-ci/immich-data/postgres
+          IMMICH_CACHE_LOCATION=/Users/immich-ci/immich-data/cache
+          IMMICH_CONFIG_LOCATION=/Users/immich-ci/immich-data/config
+          EOF
+          trap 'rm -f .env .immich-host.env' EXIT
+          docker compose --env-file .env --env-file .immich-host.env config --quiet
 

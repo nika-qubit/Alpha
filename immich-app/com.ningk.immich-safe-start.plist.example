@@ -6,7 +6,7 @@
     <string>com.ningk.immich-safe-start</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/REPLACE_WITH_MAC_USERNAME/immich-app/immich-safe-start.sh</string>
+        <string>/Users/REPLACE_WITH_MAC_USERNAME/immich-app/immich-volume-monitor.sh</string>
     </array>
     <key>EnvironmentVariables</key>
     <dict>
@@ -17,6 +17,10 @@
     </dict>
     <key>RunAtLoad</key>
     <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
     <key>StandardOutPath</key>
     <string>/Users/REPLACE_WITH_MAC_USERNAME/Library/Logs/Immich/safe-start.log</string>
     <key>StandardErrorPath</key>

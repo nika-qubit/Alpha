@@ -45,7 +45,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c "$branch"
-          git add immich-app/docker-compose.yml immich-app/.env.example
+          git add immich-app/docker-compose.yml immich-app/immich-version.txt
           git commit -m "chore(immich): propose ${RELEASE}"
           git push origin "$branch"
           body_file="$RUNNER_TEMP/immich-update-pr.md"
@@ -55,6 +55,10 @@ jobs:
           This draft was generated from Immich's official stable GitHub release and GHCR image manifest digests. It only updates repository deployment templates; it does not deploy to the Mac mini.
 
           Before marking ready, review the [official release notes](https://github.com/immich-app/immich/releases/tag/${RELEASE}), confirm any intermediate-upgrade requirements and database compatibility, and reconcile the repository templates with the live Mac mini configuration. Require a fresh verified database backup, storage checks, and the Motion Photo/external-library verification plan before any production rollout.
+
+          ### Motion Photo release gate
+
+          Specifically review [issue #30825](https://github.com/immich-app/immich/issues/30825) and the related fixes [#32077](https://github.com/immich-app/immich/pull/32077), [#32080](https://github.com/immich-app/immich/pull/32080), [#32079](https://github.com/immich-app/immich/pull/32079), and [#32931](https://github.com/immich-app/immich/pull/32931). A closed issue alone does not prove the exact offline/Trash regression is fixed. Require an external-library Motion Photo canary scan, preserved parent/video linkage, no unexpected Offline/Trash transition, and successful playback before broader recovery or scans.
 
           Do not merge or apply solely because this PR was generated.
           EOF

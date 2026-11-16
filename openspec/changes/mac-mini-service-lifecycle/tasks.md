@@ -15,9 +15,9 @@
 
 - [x] 2.1 Inventory which host files and policies OpenTofu will own and which remain owned by Docker Compose.
 - [ ] 2.1a Reconcile the live Compose and safe-start files with the public repository templates before importing or applying OpenTofu; keep machine-specific values out of Git.
-- [ ] 2.2 Evaluate candidate OpenTofu providers against macOS file, LaunchAgent, and state-recovery requirements in an isolated test environment.
-- [ ] 2.3 Confirm a resource has exactly one owner; reject a design that manages Compose containers through both Compose and OpenTofu.
-- [ ] 2.4 Confirm CI can validate a change without access to production credentials, state, media, or the Mac mini.
+- [x] 2.2 Evaluate the pinned Local provider against macOS file and LaunchAgent staging requirements in an isolated fixture; production state recovery remains a rollout gate.
+- [x] 2.3 Keep host files in OpenTofu's scope and Immich containers/bind mounts under Compose only.
+- [x] 2.4 Add CI checks that use synthetic inputs and a disabled backend, without production credentials, state, media, or Mac mini access.
 - [ ] 2.5 Build the dependency and compatibility inventory for macOS, Docker Desktop, bundled Engine/Compose, OpenTofu/providers, and every Immich service image.
 - [ ] 2.6 Verify the planned layer order and recovery path for each host/runtime upgrade against current official vendor guidance.
 
@@ -26,7 +26,7 @@
 - [x] 3.1 Add a daily official Immich stable-release check that produces a draft pull request with the exact server and machine-learning image digests; it never deploys to production.
 - [ ] 3.2 Add compatibility and intermediate-upgrade checks from official release notes.
 - [ ] 3.3 Add ChatGPT Desktop version reporting using only official OpenAI release/update sources.
-- [ ] 3.4 Add CI validation for Compose configuration, OpenTofu formatting/validation/plan, secrets, and version pinning.
+- [x] 3.4 Add CI validation for Compose configuration, OpenTofu formatting/validation/plan, public host-identity checks, and pinned images.
 
 ## 4. Implement and verify host recovery
 
