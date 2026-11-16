@@ -18,7 +18,7 @@
 - [x] 2.2 Evaluate the pinned Local provider against macOS file and LaunchAgent staging requirements in an isolated fixture; production state recovery remains a rollout gate.
 - [x] 2.3 Keep host files in OpenTofu's scope and Immich containers/bind mounts under Compose only.
 - [x] 2.4 Add CI checks that use synthetic inputs and a disabled backend, without production credentials, state, media, or Mac mini access.
-- [ ] 2.5 Build the dependency and compatibility inventory for macOS, Docker Desktop, bundled Engine/Compose, OpenTofu/providers, and every Immich service image.
+- [x] 2.5 Record a dated dependency/version inventory with vendor sources and per-layer qualification gates; refresh it before maintenance rather than treating the snapshot as live status.
 - [ ] 2.6 Verify the planned layer order and recovery path for each host/runtime upgrade against current official vendor guidance.
 
 ## 3. Implement update visibility and qualification
