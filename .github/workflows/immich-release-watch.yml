@@ -45,7 +45,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c "$branch"
-          git add immich-app/docker-compose.yml immich-app/.env.example
+          git add immich-app/docker-compose.yml immich-app/immich-version.txt
           git commit -m "chore(immich): propose ${RELEASE}"
           git push origin "$branch"
           body_file="$RUNNER_TEMP/immich-update-pr.md"

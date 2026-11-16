@@ -8,8 +8,11 @@
 **/*.tfstate
 **/*.tfstate.*
 **/*.tfplan
+**/*.tfvars
 **/crash.log
 **/crash.*.log
 **/*.auto.tfvars
 **/terraform.tfvars
 **/__pycache__/
+mac-mini/iac/.generated/
+!mac-mini/iac/fixtures/ci.tfvars

@@ -4,10 +4,10 @@ This directory records the operating policy for the Mac mini host. The OpenSpec 
 
 ## Ownership
 
-- OpenTofu will manage host-level files and policy artifacts only, using pinned providers and local state protected by FileVault.
+- OpenTofu will render host configuration using a pinned local provider and local state protected by FileVault. Docker Compose remains the sole owner of Immich containers.
 - Docker Compose remains the only owner of the Immich containers and bind mounts.
 - macOS and Docker Desktop are updated through Apple and Docker's official channels. OpenTofu does not install either application.
-- ChatGPT Desktop remains on OpenAI's official update path. The monitor reports its installed version and whether an official update can be verified; it will not use a third-party package source or manipulate session data.
+- ChatGPT Desktop remains on OpenAI's official update path. OpenTofu does not update it; a future status check must rely on verifiable official information and must not use a third-party package source or manipulate session data.
 
 ## Update defaults
 
@@ -19,17 +19,17 @@ This directory records the operating policy for the Mac mini host. The OpenSpec 
 
 ## State and privacy
 
-The local OpenTofu state is stored on the internal FileVault-protected disk and excluded from Git. It contains no credentials. Saved plans, `.tfvars`, production `.env`, disk UUIDs, sentinels, and host-specific paths are also excluded from Git and CI artifacts. If local state is lost, reconstruct it by importing the existing host files and reviewing the resulting plan; do not apply an empty-state plan to production.
+The local OpenTofu state is stored on the internal FileVault-protected disk and excluded from Git. It contains no database credentials, but it does contain private volume identities and paths. Use `umask 077` before local OpenTofu initialization/apply, keep the state file at mode `0600`, and keep the generated staging directory at mode `0700`. Saved plans, `.tfvars`, production `.env`, sentinels, and host-specific paths are excluded from Git and CI artifacts. Keep the state on this FileVault-protected host. The Local provider cannot import the existing safe-start script or LaunchAgent, so the root currently renders ignored staging files only; it does not overwrite or adopt active production files. A first production installation needs a separate reviewed backup-and-activation procedure.
 
 ## Startup and failure policy
 
-- The existing LaunchAgent starts Immich only after a user session exists, Docker Desktop is ready, and both expected volumes pass private UUID and sentinel checks. FileVault is enabled, so unattended startup before unlock is not promised; automatic login will not be enabled as a workaround.
-- Missing or incorrect storage blocks startup and must never create fallback media or backup directories.
-- A runtime volume monitor will stop the Immich Compose stack and alert if a required disk disappears. It may restart the stack only after Docker and both volume checks pass again.
+- The active LaunchAgent is user-scoped. FileVault is enabled, so unattended startup before unlock is not promised; automatic login will not be enabled as a workaround.
+- The active safe-start checks required volumes before startup. The candidate monitor adds runtime fail-closed behavior, but is staged and inactive until separately installed.
+- Missing or incorrect storage must block startup and must never create fallback media or backup directories.
 - An internet outage does not trigger a version change or prevent LAN-local operation when the host and required disks remain healthy.
 
-## Known prerequisite before first OpenTofu apply
+## Production adoption prerequisite
 
-The repository Compose and safe-start templates currently differ from the live files on the Mac mini. Reconcile that drift, preserve current production behavior, import the existing files into OpenTofu state, and review a no-surprise plan before applying. No OpenTofu apply is authorized by this policy file alone.
+The repository Compose and safe-start templates differ from the live files on the Mac mini. OpenTofu currently stages generated files under `mac-mini/iac/.generated/`; it does not install them. Before production adoption, reconcile the Compose and safe-start behavior, snapshot the current LaunchAgent and scripts to EnvoySSD, validate the staged plist/scripts/Compose config, and review the exact launchd activation plan. Applying the staging root does not modify production services.
 
 The 120 GB EnvoySSD holds database backups, not a second copy of the roughly 1 TB media library. An independent media-backup destination and recovery objectives remain unresolved; until then, the system can fail closed when the media disk disappears but cannot claim complete recovery from permanent media-disk failure.

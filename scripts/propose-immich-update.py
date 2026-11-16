@@ -81,14 +81,14 @@ def set_output(name: str, value: str) -> None:
 
 def main() -> int:
     root = Path(sys.argv[1] if len(sys.argv) > 1 else ".").resolve()
-    env_path = root / "immich-app/.env.example"
+    version_path = root / "immich-app/immich-version.txt"
     compose_path = root / "immich-app/docker-compose.yml"
-    env_text = env_path.read_text(encoding="utf-8")
+    version_text = version_path.read_text(encoding="utf-8")
     compose_text = compose_path.read_text(encoding="utf-8")
 
-    current_match = re.search(r"(?m)^IMMICH_VERSION=(v\d+\.\d+\.\d+)[ \t]*$", env_text)
+    current_match = re.fullmatch(r"(v\d+\.\d+\.\d+)[ \t\r\n]*", version_text)
     if not current_match:
-        raise RuntimeError("Could not read a pinned stable IMMICH_VERSION from .env.example")
+        raise RuntimeError("Could not read a pinned stable tag from immich-version.txt")
     current = current_match.group(1)
 
     release = get_json("https://api.github.com/repos/immich-app/immich/releases/latest")
@@ -135,14 +135,8 @@ def main() -> int:
         if count != 1:
             raise RuntimeError(f"Expected one pinned {image} image in Compose, found {count}")
 
-    env_text, count = re.subn(
-        r"(?m)^IMMICH_VERSION=v\d+\.\d+\.\d+[ \t]*$", f"IMMICH_VERSION={latest}", env_text
-    )
-    if count != 1:
-        raise RuntimeError("Expected exactly one IMMICH_VERSION in .env.example")
-
     compose_path.write_text(compose_text, encoding="utf-8")
-    env_path.write_text(env_text, encoding="utf-8")
+    version_path.write_text(f"{latest}\n", encoding="utf-8")
     print(f"Proposed {current} -> {latest}; pinned both image manifest digests.")
     return 0
 
