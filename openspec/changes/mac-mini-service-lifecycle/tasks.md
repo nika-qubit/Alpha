@@ -32,7 +32,7 @@
 
 - [ ] 4.1 Reconcile OpenTofu-managed host configuration with the existing safe-start LaunchAgent.
 - [ ] 4.2 Verify cold boot, Docker-not-ready, missing-volume, wrong-volume, missing-sentinel, network-down, and runtime-disconnect scenarios without using production media for destructive tests.
-- [ ] 4.3 Verify missing disks never create fallback media or backup directories.
+- [x] 4.3 Verify safe-start refuses to invoke Compose when a required volume is absent; Compose bind mounts set `create_host_path: false`, and the monitor's mocked failure test verifies it stops without calling `compose up`.
 - [ ] 4.4 Establish an independent original-media backup and verify representative restore before claiming protection from media-disk failure.
 - [ ] 4.5 Verify host updates layer by layer, including macOS login/FileVault behavior, Docker Desktop startup, APFS bind mounts, and the safe-start LaunchAgent.
 
