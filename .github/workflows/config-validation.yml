@@ -60,6 +60,9 @@ jobs:
       - name: Check public config for host identities and local state
         run: python3 scripts/validate-public-config.py
 
+      - name: Exercise storage failure guards with fake commands
+        run: python3 scripts/test-storage-guards.py
+
       - name: Parse OpenSpec and policy YAML
         run: |
           ruby -e 'require "yaml"; ARGV.each { |file| YAML.parse_file(file); puts "YAML syntax OK: #{file}" }' \

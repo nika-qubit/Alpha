@@ -4,6 +4,7 @@ set -euo pipefail
 APP_HOME="${HOME}/immich-app"
 HOST_ENV_FILE="${APP_HOME}/.immich-host.env"
 DB_ENV_FILE="${APP_HOME}/.env"
+DOCKER_BIN="${IMMICH_DOCKER_BIN:-docker}"
 
 fail() {
     echo "ERROR: $1"
@@ -17,7 +18,7 @@ read_env() {
 }
 
 compose() {
-    docker compose --env-file "$DB_ENV_FILE" --env-file "$HOST_ENV_FILE" "$@"
+    "$DOCKER_BIN" compose --env-file "$DB_ENV_FILE" --env-file "$HOST_ENV_FILE" "$@"
 }
 
 [[ -f "$HOST_ENV_FILE" ]] || fail "Private host configuration is missing."
@@ -50,7 +51,7 @@ for key in MEDIA_VOLUME MEDIA_UUID MEDIA_SENTINEL MEDIA_SENTINEL_CONTENT \
 done
 
 for i in {1..60}; do
-    if docker info >/dev/null 2>&1; then
+    if "$DOCKER_BIN" info >/dev/null 2>&1; then
         break
     fi
     [[ "$i" -lt 60 ]] || fail "Docker Desktop did not become ready within five minutes."
